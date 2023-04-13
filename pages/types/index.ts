@@ -8,4 +8,10 @@ export namespace Types {
   export type AddTask = {
     addTask: (name: string) => void;
   }
+
+  export interface TodoProps {
+    toggleTaskCompleted: (id: string) => void;
+    deleteTask: (id: string) => void;
+  }
+
 }

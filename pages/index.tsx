@@ -46,7 +46,27 @@ export const App = ({ data }: AppProps) => {
   }, []);
 
   function addTask(name: string): void {
-    setTaskList([...taskList, { name, id: nanoid(), completed: false }]);
+    if (name)
+      setTaskList([...taskList, { name, id: nanoid(), completed: false }]);
+  }
+
+  function toggleTaskCompleted(id: string): void {
+    const updatedTasks = taskList.map((task) => {
+      if (id == task.id) {
+        return { ...task, completed: !task.completed };
+      }
+      // else
+      return task;
+    });
+    setTaskList(updatedTasks);
+  }
+
+  function deleteTask(id: string): void {
+    console.log("delete");
+    // this is where we use filter
+    const remainingTasks = taskList.filter((task) => id != task.id);
+    // tasks inside remaining tasks satisfy that condition
+    setTaskList(remainingTasks);
   }
 
   return (
@@ -80,9 +100,13 @@ export const App = ({ data }: AppProps) => {
           return (
             <Todo
               key={task.id}
-              name={task.name}
-              completed={task.completed}
-              id={task.id}
+              {...task}
+              toggleTaskCompleted={toggleTaskCompleted}
+              deleteTask={deleteTask}
+              // name={task.name}
+              // completed={task.completed}
+              // id={task.id}
+              // same replacement
             />
           );
         })}
