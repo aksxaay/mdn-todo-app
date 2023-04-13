@@ -4,4 +4,8 @@ export namespace Types {
     name: string;
     completed: boolean;
   }
+
+  export type AddTask = {
+    addTask: (name: string) => void;
+  }
 }
