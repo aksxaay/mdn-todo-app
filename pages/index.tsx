@@ -28,13 +28,22 @@ const DATA: Types.Todo[] = [
   },
 ];
 
+export const FILTER_MAP = {
+  All: () => true,
+  Active: (task: Types.Todo) => !task.completed,
+  Completed: (task: Types.Todo) => task.completed,
+};
+
+const FILTER_NAMES = Object.keys(FILTER_MAP);
+
 interface AppProps {
   data: Types.Todo[];
 }
 export const App = ({ data }: AppProps) => {
   const [taskList, setTaskList] = useState(data);
-
+  const [filter, setFilter] = useState<Types.FilterType>("All");
   const [api, contextHolder] = notification.useNotification();
+
   const openNotification = (
     placement: NotificationPlacement,
     type: string,
@@ -114,19 +123,30 @@ export const App = ({ data }: AppProps) => {
     setTaskList(editedTaskList);
   }
 
+  const FILTER_ARRAY = Object.keys(FILTER_MAP);
+
   return (
     <div className="todoapp stack-large">
       {contextHolder}
       <h1>TodoMatic</h1>
       <Form addTask={addTask} />
-      <Filter />
+      <div className="filters btn-group stack-exception">
+        {FILTER_ARRAY.map((name) => (
+          <Filter
+            key={name}
+            name={name as Types.FilterType}
+            isPressed={name === filter}
+            setFilter={setFilter}
+          />
+        ))}
+      </div>
       <h2 id="list-heading">3 tasks remaining</h2>
       <ul
         role="list"
         className="todo-list stack-large stack-exception"
         aria-labelledby="list-heading"
       >
-        {taskList?.map((task: Types.Todo) => {
+        {taskList?.filter(FILTER_MAP[filter]).map((task: Types.Todo) => {
           return (
             <Todo
               key={task.id}

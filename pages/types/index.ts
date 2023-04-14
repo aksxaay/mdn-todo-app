@@ -1,3 +1,5 @@
+import { FILTER_MAP } from "..";
+
 export namespace Types {
   export interface Todo {
     id: string;
@@ -14,5 +16,7 @@ export namespace Types {
     deleteTask: (id: string) => void;
     editTask: (id: string, newName: string) => void;
   }
+
+  export type FilterType = keyof typeof FILTER_MAP;
 
 }
