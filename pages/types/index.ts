@@ -12,6 +12,7 @@ export namespace Types {
   export interface TodoProps {
     toggleTaskCompleted: (id: string) => void;
     deleteTask: (id: string) => void;
+    callNotification: (id: string) => void;
   }
 
 }

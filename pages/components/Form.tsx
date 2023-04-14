@@ -14,7 +14,7 @@ export function Form({ addTask }: Types.AddTask) {
   const openNotification = (placement: NotificationPlacement) => {
     api.info({
       message: `Add Task!`,
-      description: `Successfully Added '${name}' the the list`,
+      description: `Successfully Added Task '${name}'`,
       placement,
     });
   };

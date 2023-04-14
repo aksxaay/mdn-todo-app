@@ -5,6 +5,10 @@ import { Types } from "./types";
 import { GetStaticProps } from "next";
 import { useEffect, useState } from "react";
 
+// Notification
+import { notification } from "antd";
+import { NotificationPlacement } from "antd/es/notification/interface";
+
 const DATA: Types.Todo[] = [
   {
     id: nanoid(),
@@ -28,6 +32,18 @@ interface AppProps {
 }
 export const App = ({ data }: AppProps) => {
   const [taskList, setTaskList] = useState(data);
+
+  const [api, contextHolder] = notification.useNotification();
+  const openNotification = (
+    placement: NotificationPlacement,
+    name: string | undefined
+  ) => {
+    api.info({
+      message: `Deleted Task!`,
+      description: `Successfully Deleted Task '${name}'`,
+      placement,
+    });
+  };
 
   useEffect(() => {
     fetch(`https://jsonplaceholder.typicode.com/users/5`)
@@ -69,8 +85,14 @@ export const App = ({ data }: AppProps) => {
     setTaskList(remainingTasks);
   }
 
+  function callNotification(id: string) {
+    let task = taskList.find((task) => id == task.id);
+    (() => openNotification("topLeft", task?.name))();
+  }
+
   return (
     <div className="todoapp stack-large">
+      {contextHolder}
       <h1>TodoMatic</h1>
       <Form addTask={addTask} />
       <div className="filters btn-group stack-exception">
@@ -103,6 +125,7 @@ export const App = ({ data }: AppProps) => {
               {...task}
               toggleTaskCompleted={toggleTaskCompleted}
               deleteTask={deleteTask}
+              callNotification={callNotification}
               // name={task.name}
               // completed={task.completed}
               // id={task.id}
