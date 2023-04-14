@@ -1,3 +1,4 @@
+import { Filter } from "./components/Filter";
 import { Form } from "./components/Form";
 import { nanoid } from "nanoid";
 import Todo from "./components/Todo";
@@ -36,13 +37,23 @@ export const App = ({ data }: AppProps) => {
   const [api, contextHolder] = notification.useNotification();
   const openNotification = (
     placement: NotificationPlacement,
-    name: string | undefined
+    type: string,
+    name: string | undefined,
+    newName: string | undefined
   ) => {
-    api.info({
-      message: `Deleted Task!`,
-      description: `Successfully Deleted Task '${name}'`,
-      placement,
-    });
+    if (type == "Deleted") {
+      api.info({
+        message: `Deleted Task!`,
+        description: `Successfully ${type} Task '${name}'`,
+        placement,
+      });
+    } else {
+      api.info({
+        message: `Deleted Task!`,
+        description: `Successfully ${type} Task from '${name}' to '${newName}'`,
+        placement,
+      });
+    }
   };
 
   useEffect(() => {
@@ -78,16 +89,29 @@ export const App = ({ data }: AppProps) => {
   }
 
   function deleteTask(id: string): void {
-    console.log("delete");
     // this is where we use filter
-    const remainingTasks = taskList.filter((task) => id != task.id);
+    const remainingTasks = taskList.filter((task) => {
+      if (task.id == id) {
+        (() => openNotification("topLeft", "Deleted", task?.name, undefined))();
+      }
+      return id != task.id;
+    });
     // tasks inside remaining tasks satisfy that condition
     setTaskList(remainingTasks);
   }
 
-  function callNotification(id: string) {
-    let task = taskList.find((task) => id == task.id);
-    (() => openNotification("topLeft", task?.name))();
+  function editTask(id: string, newName: string) {
+    console.log("editTas");
+    const editedTaskList = taskList.map((task) => {
+      if (id == task.id) {
+        (() => openNotification("topLeft", "Updated", task?.name, newName))();
+        return { ...task, name: newName };
+      }
+
+      // else
+      return task;
+    });
+    setTaskList(editedTaskList);
   }
 
   return (
@@ -95,23 +119,7 @@ export const App = ({ data }: AppProps) => {
       {contextHolder}
       <h1>TodoMatic</h1>
       <Form addTask={addTask} />
-      <div className="filters btn-group stack-exception">
-        <button type="button" className="btn toggle-btn" aria-pressed="true">
-          <span className="visually-hidden">Show </span>
-          <span>all</span>
-          <span className="visually-hidden"> tasks</span>
-        </button>
-        <button type="button" className="btn toggle-btn" aria-pressed="false">
-          <span className="visually-hidden">Show </span>
-          <span>Active</span>
-          <span className="visually-hidden"> tasks</span>
-        </button>
-        <button type="button" className="btn toggle-btn" aria-pressed="false">
-          <span className="visually-hidden">Show </span>
-          <span>Completed</span>
-          <span className="visually-hidden"> tasks</span>
-        </button>
-      </div>
+      <Filter />
       <h2 id="list-heading">3 tasks remaining</h2>
       <ul
         role="list"
@@ -125,7 +133,7 @@ export const App = ({ data }: AppProps) => {
               {...task}
               toggleTaskCompleted={toggleTaskCompleted}
               deleteTask={deleteTask}
-              callNotification={callNotification}
+              editTask={editTask}
               // name={task.name}
               // completed={task.completed}
               // id={task.id}
