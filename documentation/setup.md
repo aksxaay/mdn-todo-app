@@ -12,3 +12,22 @@ Here's the flow
 
 
 so build backend first? keep modifying until needs are met.
+
+`crypto` createHash
+`prisma` - for backend
+`zod` - backend type validation
+
+
+so in prisma you can infer and that's insane lmeow.
+
+also have to add `"postinstall": "prisma generate"`
+
+```
+Introspected 2 models and wrote them into prisma/schema.prisma in 1.66s
+```
+
+so that was insane.
+
+very close, good inferring, but I actually need it for better needs.
+
+installed `@prisma/client`
